@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    cattle.io/creator: norman
+  name: tulipupload
+  namespace: tuorong
+spec:
+  template:
+    metadata:
+      labels:
+        job-name: tulipupload
+    spec:
+      containers:
+      - command:
+        - /app/tulip
+        - upload
+        env:
+        - name: SQL_CONN
+          value: root:cmstop@tcp(mysqltest:3306)/sandy?charset=utf8&parseTime=True&loc=Local
+        image: d.autops.xyz/tulip:init
+        imagePullPolicy: Always
+        name: tulipupload
+        volumeMounts:
+        - mountPath: /opt
+          name: vol1
+      restartPolicy: Never
+      volumes:
+      - hostPath:
+          path: /nfs/data/tuorong/1/tulip
+          type: DirectoryOrCreate
+        name: vol1
